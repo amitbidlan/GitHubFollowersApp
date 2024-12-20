@@ -39,7 +39,7 @@ class FollowersListVC: UIViewController {
     func configureCollectionView(){
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createThreeColumnFlowLayout())
         view.addSubview(collectionView)
-        collectionView.backgroundColor = .systemPink
+        //collectionView.backgroundColor = .systemPink
         collectionView.register(FollowerCell.self, forCellWithReuseIdentifier: FollowerCell.reuseID)
     }
     
