@@ -14,6 +14,8 @@ class FollowersListVC: UIViewController {
     }
     var username:String!
     var followers : [Follower] = []
+    var page = 1
+    var hasMoreFollowers = true
     var collectionView:UICollectionView!
     var dataSource : UICollectionViewDiffableDataSource<Section,Follower>!
 
@@ -21,7 +23,7 @@ class FollowersListVC: UIViewController {
         super.viewDidLoad()
         configureViewController()
         configureCollectionView()
-        getFollowers()
+        getFollowers(username: username, page: page)
         configureDataSouce()
         
        
@@ -39,17 +41,19 @@ class FollowersListVC: UIViewController {
     func configureCollectionView(){
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UIHelper.createThreeColumnFlowLayout(in:view))
         view.addSubview(collectionView)
+        collectionView.delegate = self
         //collectionView.backgroundColor = .systemPink
         collectionView.register(FollowerCell.self, forCellWithReuseIdentifier: FollowerCell.reuseID)
     }
     
-    func getFollowers(){
-        NetworkManager.shared.getFollowers(for: username, page: 1){
+    func getFollowers(username:String,page:Int){
+        NetworkManager.shared.getFollowers(for: username, page: page){
             [weak self] result in
             guard let self = self else {return}
             switch result {
             case .success(let followers):
-                self.followers = followers
+                if followers.count < 100 { self.hasMoreFollowers = false}
+                self.followers.append(contentsOf: followers )
                 self.updateData()
             case .failure(let error):
                 self.presentGFAlertonMainThread(title: "悪いことが起こった。", message: error.rawValue, buttonTitle:"閉じる")
@@ -76,4 +80,20 @@ class FollowersListVC: UIViewController {
     }
     
 
+}
+
+
+extension FollowersListVC:UICollectionViewDelegate {
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        let offSetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
+        
+        if offSetY > contentHeight - height {
+            guard hasMoreFollowers else {return}
+            page += 1
+            print("OUR NEXT PAGE \(page)")
+            getFollowers(username: username, page: page)
+        }
+    }
 }
