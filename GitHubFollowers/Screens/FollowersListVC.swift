@@ -47,15 +47,24 @@ class FollowersListVC: UIViewController {
     }
     
     func getFollowers(username:String,page:Int){
+        showLoading()
         NetworkManager.shared.getFollowers(for: username, page: page){
             [weak self] result in
             guard let self = self else {return}
+            self.dismissLoadingView()
             switch result {
             case .success(let followers):
                 if followers.count < 100 { self.hasMoreFollowers = false}
                 self.followers.append(contentsOf: followers )
+                if self.followers.isEmpty {
+                    let message = "このユーザーにはフォロワーがいません。フォローするには、ここを参照してください。😁"
+                    DispatchQueue.main.async{
+                        self.showEmptyStateView(with: message, in: self.view)
+                        return
+                    }
+                }
                 self.updateData()
-            case .failure(let error):
+            case .failure(let error): 
                 self.presentGFAlertonMainThread(title: "悪いことが起こった。", message: error.rawValue, buttonTitle:"閉じる")
             }
         }
