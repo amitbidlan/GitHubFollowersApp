@@ -13,6 +13,7 @@ class UserInfoVC: UIViewController {
     let headerView = UIView()
     
     let itemViewOne = UIView()
+    
     let itemViewTwo = UIView()
     
     var itemViews:[UIView] = []
@@ -22,37 +23,37 @@ class UserInfoVC: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         configureViewCOntroller()
-        layoutUI()
         getUserInfo()
+        layoutUI()
+        
         
     }
     
     func layoutUI(){
+        
+         let padding:CGFloat = 20
+         let itemheight:CGFloat = 140
         itemViews = [headerView,itemViewOne,itemViewTwo]
+       
         for itemView in itemViews{
             view.addSubview(itemView)
             itemView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                itemView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
+                itemView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding)
+            ])
         }
-        itemViewOne.backgroundColor = .darkGray
-        itemViewTwo.backgroundColor = .darkGray
         
-        let padding:CGFloat = 20
-        let itemheight:CGFloat = 140
+        
         
         NSLayoutConstraint.activate([
             headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             headerView.heightAnchor.constraint(equalToConstant: 180),
             
             itemViewOne.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: padding),
-            itemViewOne.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            itemViewOne.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             itemViewOne.heightAnchor.constraint(equalToConstant: itemheight),
             
             itemViewTwo.topAnchor.constraint(equalTo: itemViewOne.bottomAnchor, constant: padding),
-            itemViewTwo.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-            itemViewTwo.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             itemViewTwo.heightAnchor.constraint(equalToConstant: itemheight),
             //8;10;34
             
@@ -82,6 +83,8 @@ class UserInfoVC: UIViewController {
             case .success(let user):
                 DispatchQueue.main.async{
                     self.add(childVC: GFUserInfoHeaderVC(user: user), to: self.headerView)
+                    self.add(childVC: GFRepoItemVC(user: user), to: self.itemViewOne)
+                    self.add(childVC: GFFollowerItemVC(user: user), to: self.itemViewTwo)
                 }
                 
             case .failure(let error):

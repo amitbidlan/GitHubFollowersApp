@@ -19,14 +19,14 @@ class GFItemInfoView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        confifure()
+        configure()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func confifure(){
+    private func configure(){
         addSubview(symbolImageView)
         addSubview(titleLabel)
         addSubview(countLabel)
