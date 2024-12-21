@@ -15,7 +15,7 @@ class UserInfoVC: UIViewController {
     let itemViewOne = UIView()
     
     let itemViewTwo = UIView()
-    
+    let dateLabel   = GFBodyLabel(textAlignment: .center,fontSize: 13)
     var itemViews:[UIView] = []
     
     
@@ -33,7 +33,7 @@ class UserInfoVC: UIViewController {
         
          let padding:CGFloat = 20
          let itemheight:CGFloat = 140
-        itemViews = [headerView,itemViewOne,itemViewTwo]
+        itemViews = [headerView,itemViewOne,itemViewTwo,dateLabel]
        
         for itemView in itemViews{
             view.addSubview(itemView)
@@ -55,7 +55,9 @@ class UserInfoVC: UIViewController {
             
             itemViewTwo.topAnchor.constraint(equalTo: itemViewOne.bottomAnchor, constant: padding),
             itemViewTwo.heightAnchor.constraint(equalToConstant: itemheight),
-            //8;10;34
+            
+            dateLabel.topAnchor.constraint(equalTo: itemViewTwo.bottomAnchor, constant: padding),
+            dateLabel.heightAnchor.constraint(equalToConstant: 18)
             
         ])
     }
@@ -85,6 +87,7 @@ class UserInfoVC: UIViewController {
                     self.add(childVC: GFUserInfoHeaderVC(user: user), to: self.headerView)
                     self.add(childVC: GFRepoItemVC(user: user), to: self.itemViewOne)
                     self.add(childVC: GFFollowerItemVC(user: user), to: self.itemViewTwo)
+                    self.dateLabel.text = "「\(user.createdAt.convertToDisplayFormat())からGitHubユーザー」"
                 }
                 
             case .failure(let error):
