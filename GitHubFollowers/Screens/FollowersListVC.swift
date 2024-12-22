@@ -45,6 +45,9 @@ class FollowersListVC: UIViewController {
         view.backgroundColor = .systemBackground
         navigationController?.navigationBar.prefersLargeTitles = true
         
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped ))
+        navigationItem.rightBarButtonItem = addButton
+        
     }
     func configureCollectionView(){
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UIHelper.createThreeColumnFlowLayout(in:view))
@@ -102,6 +105,29 @@ class FollowersListVC: UIViewController {
         snapshot.appendItems(followers)
         DispatchQueue.main.async{
             self.dataSource.apply(snapshot, animatingDifferences: true)}
+    }
+    
+    @objc func addButtonTapped(){
+        showLoading()
+        NetworkManager.shared.getUserInfo(for: username){ [weak self] result in
+            guard let self = self else {return}
+            self.dismissLoadingView()
+            switch result {
+            case .success(let user):
+                let favorite = Follower(login: user.login, avatarUrl: user.avatarUrl)
+                PersistenceManager.updateWith(favorite: favorite, actionType: .add){[weak self] error in
+                    guard let self = self else {return}
+                    guard let error = error else {
+                        self.presentGFAlertonMainThread(title: "成功!", message: "このユーザーをお気に入りとして保存しました。", buttonTitle: "閉じる")
+                        return
+                    }
+                    self.presentGFAlertonMainThread(title: "問題が発生しました。", message: error.rawValue, buttonTitle: "閉じる")
+                    
+                }
+            case .failure(let error):
+                self.presentGFAlertonMainThread(title: "問題が発生しました。", message: error.rawValue, buttonTitle: "閉じる")
+            }
+        }
     }
     
 
