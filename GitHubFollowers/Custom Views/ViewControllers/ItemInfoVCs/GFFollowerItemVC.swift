@@ -19,4 +19,9 @@ class GFFollowerItemVC:GFItemInfoVC {
         actionButton.set(backgroundColor: .systemBlue, title: "フォロワーを獲得する")
         
     }
+    
+    override func actionButtonTapped() {
+        
+        delegate.didTapGetFollowers(for: user)
+    }
 }
